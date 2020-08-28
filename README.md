@@ -44,6 +44,50 @@ You should see output like this:
 {"version": "0.5.0", "build": "2020-07-06T17:32:33Z"}
 ```
 
+## Lesson 1: Request response
+
+Test your 'request-response' message handler by sending a test message containing the word "Hello" with the `rsc` tool:
+
+```bash
+rsc --debug --request --data "{\"message\":\"Hello\"}" --route request-response --stacktrace tcp://localhost:7000
+```
+
+The response will look something like this:
+
+```bash
+2020-08-28 14:17:06.987 DEBUG --- [actor-tcp-nio-1] i.r.FrameLogger : sending ->
+Frame => Stream ID: 1 Type: REQUEST_RESPONSE Flags: 0b100000000 Length: 45
+Metadata:
+         +-------------------------------------------------+
+         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
++--------+-------------------------------------------------+----------------+
+|00000000| 10 72 65 71 75 65 73 74 2d 72 65 73 70 6f 6e 73 |.request-respons|
+|00000010| 65                                              |e               |
++--------+-------------------------------------------------+----------------+
+Data:
+         +-------------------------------------------------+
+         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
++--------+-------------------------------------------------+----------------+
+|00000000| 7b 22 6d 65 73 73 61 67 65 22 3a 22 48 65 6c 6c |{"message":"Hell|
+|00000010| 6f 22 7d                                        |o"}             |
++--------+-------------------------------------------------+----------------+
+2020-08-28 14:17:07.234 DEBUG --- [actor-tcp-nio-1] i.r.FrameLogger : receiving ->
+Frame => Stream ID: 1 Type: NEXT_COMPLETE Flags: 0b1100000 Length: 71
+Data:
+         +-------------------------------------------------+
+         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |
++--------+-------------------------------------------------+----------------+
+|00000000| 7b 22 6d 65 73 73 61 67 65 22 3a 22 54 68 61 6e |{"message":"Than|
+|00000010| 6b 73 20 66 6f 72 20 79 6f 75 72 20 6d 65 73 73 |ks for your mess|
+|00000020| 61 67 65 3a 20 48 65 6c 6c 6f 22 2c 22 63 72 65 |age: Hello","cre|
+|00000030| 61 74 65 64 22 3a 31 35 39 38 36 32 34 32 32 37 |ated":1598624227|
+|00000040| 7d                                              |}               |
++--------+-------------------------------------------------+----------------+
+{"message":"Thanks for your message: Hello","created":1598624227}
+```
+
+Notice the response from the rsocket-server: "Thanks for your message: Hello"
+
 
 ## Keep Learning
 
