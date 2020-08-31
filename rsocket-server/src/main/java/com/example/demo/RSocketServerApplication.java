@@ -21,4 +21,10 @@ public class RSocketServerApplication {
 		log.info("Received request-response message: {}", message);
 		return Mono.just(new Message("You said: " + message.getMessage()));
 	}
+
+	@MessageMapping("fire-and-forget")
+	public Mono<Void> fireAndForget(final Message message) {
+		log.info("Received fire-and-forget request: {}", message);
+		return Mono.empty();
+	}
 }

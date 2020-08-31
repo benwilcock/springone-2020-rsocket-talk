@@ -43,4 +43,18 @@ class RSocketServerApplicationTests {
 				})
 				.verifyComplete();
 	}
+
+	@Test
+	public void testFireAndForget() {
+		// Send a fire-and-forget message
+		Mono<Void> result = requester
+				.route("fire-and-forget")
+				.data(new Message("TEST"))
+				.retrieveMono(Void.class);
+
+		// Assert that the result is a completed Mono.
+		StepVerifier
+				.create(result)
+				.verifyComplete();
+	}
 }
