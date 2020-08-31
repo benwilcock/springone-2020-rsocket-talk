@@ -11,6 +11,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -76,6 +78,34 @@ class RSocketServerApplicationTests {
 				.expectNextCount(0)
 				.consumeNextWith(message -> {
 					assertThat(message.getMessage()).isEqualTo("You said: TEST. Response #1");
+				})
+				.thenCancel()
+				.verify();
+	}
+
+	@Test
+	public void testStreamGetsStream() {
+		// Create first setting after 0 seconds. Server starts sending after 2 seconds.
+		Mono<Integer> setting1 = Mono.just(Integer.valueOf(2)).delayElement(Duration.ofSeconds(0));
+		// Create next setting after 3 secconds. Server starts sending in after 1 second.
+		Mono<Integer> setting2 = Mono.just(Integer.valueOf(1)).delayElement(Duration.ofSeconds(3));
+		// Bundle settings into a Flux
+		Flux<Integer> settings = Flux.concat(setting1, setting2);
+
+		// Send a stream of request messages
+		Flux<Message> stream = requester
+				.route("stream-stream")
+				.data(settings)
+				.retrieveFlux(Message.class);
+
+		// Verify that the response messages contain the expected data
+		StepVerifier
+				.create(stream)
+				.consumeNextWith(message -> {
+					assertThat(message.getMessage()).isEqualTo("Stream Response #0");
+				})
+				.consumeNextWith(message -> {
+					assertThat(message.getMessage()).isEqualTo("Stream Response #0");
 				})
 				.thenCancel()
 				.verify();
