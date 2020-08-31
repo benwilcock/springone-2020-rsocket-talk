@@ -7,6 +7,7 @@ import org.springframework.boot.rsocket.context.LocalRSocketServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -56,5 +57,27 @@ class RSocketServerApplicationTests {
 		StepVerifier
 				.create(result)
 				.verifyComplete();
+	}
+
+	@Test
+	public void testRequestStream() {
+		// Send a request message
+		Flux<Message> stream = requester
+				.route("request-stream")
+				.data(new Message("TEST"))
+				.retrieveFlux(Message.class);
+
+		// Verify that the response messages contain the expected data
+		StepVerifier
+				.create(stream)
+				.consumeNextWith(message -> {
+					assertThat(message.getMessage()).isEqualTo("You said: TEST. Response #0");
+				})
+				.expectNextCount(0)
+				.consumeNextWith(message -> {
+					assertThat(message.getMessage()).isEqualTo("You said: TEST. Response #1");
+				})
+				.thenCancel()
+				.verify();
 	}
 }
