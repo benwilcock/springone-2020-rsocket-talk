@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import io.rsocket.metadata.WellKnownMimeType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,10 @@ import org.springframework.boot.rsocket.context.LocalRSocketServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
+import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -25,7 +30,13 @@ class RSocketServerApplicationTests {
 								 @LocalRSocketServerPort Integer port,
 								 @Autowired RSocketStrategies strategies) {
 
+		UsernamePasswordMetadata credentials = new UsernamePasswordMetadata("user", "pass");
+		MimeType mimeType = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
+
 		requester = builder
+				.setupMetadata(credentials, mimeType)
+				.rsocketStrategies(b ->
+						b.encoder(new SimpleAuthenticationEncoder()))
 				.connectTcp("localhost", port)
 				.block();
 	}
