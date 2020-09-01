@@ -13,11 +13,13 @@ Get started with RSocket the easy way with Spring Boot
 
 1. Go to [start.spring.io](https://start.spring.io)
 
-1. Add the required RSocket dependencies
-    1. `rsocket-starter`
+2. Add the required RSocket dependencies
+   
+   1. `rsocket-starter`
 
-1. Add Lombok for our Data class (optional, but I like it)
-    1. `lombok`
+3. Add Lombok for our Data class (optional, but I like it)
+   
+   1. `lombok`
 
 ---
 
